@@ -1,0 +1,6 @@
+CLASS cl_salv_controller DEFINITION PUBLIC CREATE PUBLIC.
+  PUBLIC SECTION.
+    DATA r_adapter TYPE REF TO object.
+ENDCLASS.
+CLASS cl_salv_controller IMPLEMENTATION.
+ENDCLASS.

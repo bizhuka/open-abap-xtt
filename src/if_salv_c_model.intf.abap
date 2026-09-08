@@ -1,0 +1,6 @@
+INTERFACE if_salv_c_model PUBLIC.
+
+  CONSTANTS table TYPE i VALUE 1. 
+  CONSTANTS model TYPE i VALUE 1. 
+
+ENDINTERFACE.

@@ -1,0 +1,26 @@
+{
+  "name": "open-abap-xtt",
+  "version": "1.0.0",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node web/start.mjs",
+    "verify": "node scripts/copy_repos.cjs && abaplint && node scripts/build.mjs && node scripts/run-tests.mjs",
+    "make_all": "node scripts/make_all.js",
+    "fly": "flyctl deploy",
+    "fly:open": "flyctl open",
+    "fly:logs": "flyctl logs"
+  },
+  "devDependencies": {
+    "@abaplint/cli": "latest",
+    "@abaplint/transpiler-cli": "latest",
+    "open-abap-core": "github:open-abap/open-abap-core"
+  },
+  "dependencies": {
+    "@abaplint/database-sqlite": "latest",
+    "@abaplint/runtime": "latest",
+    "express": "^4.22.2"
+  }
+}

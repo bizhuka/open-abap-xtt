@@ -1,0 +1,8 @@
+CLASS cl_gui_container DEFINITION PUBLIC.
+  PUBLIC SECTION.
+    METHODS set_visible IMPORTING visible TYPE any OPTIONAL.
+ENDCLASS.
+CLASS cl_gui_container IMPLEMENTATION.
+  METHOD set_visible.
+  ENDMETHOD.
+ENDCLASS.

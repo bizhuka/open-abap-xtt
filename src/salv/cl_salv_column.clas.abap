@@ -1,0 +1,141 @@
+CLASS cl_salv_column DEFINITION PUBLIC.
+  PUBLIC SECTION.
+    METHODS set_technical IMPORTING value TYPE abap_bool DEFAULT abap_true.
+    METHODS set_short_text IMPORTING value TYPE clike.
+    METHODS set_medium_text IMPORTING value TYPE clike.
+    METHODS set_long_text IMPORTING value TYPE clike.
+    METHODS set_output_length IMPORTING value TYPE any.
+    METHODS set_sign IMPORTING value TYPE any OPTIONAL.
+    METHODS set_optimized IMPORTING value TYPE abap_bool DEFAULT abap_true.
+    METHODS set_alignment IMPORTING value TYPE any OPTIONAL.
+    METHODS set_visible IMPORTING value TYPE abap_bool.
+    METHODS set_zero IMPORTING value TYPE abap_bool DEFAULT abap_true.
+
+    METHODS get_columnname
+      RETURNING
+        VALUE(value) TYPE lvc_fname.
+
+    METHODS set_currency_column
+      IMPORTING
+        value TYPE any
+      RAISING
+        cx_salv_not_found
+        cx_salv_data_error.
+
+    METHODS set_tooltip
+      IMPORTING
+        value TYPE lvc_tip.
+
+    METHODS set_quantity
+      IMPORTING
+        value TYPE any.
+
+    METHODS set_quantity_column
+      IMPORTING
+        value TYPE any
+      RAISING
+        cx_salv_not_found
+        cx_salv_data_error.
+
+    METHODS set_currency
+      IMPORTING
+        value TYPE clike.
+
+    METHODS get_ddic_datatype
+      RETURNING
+        VALUE(value) TYPE char4.
+
+    METHODS get_ddic_inttype
+      RETURNING
+        VALUE(value) TYPE char1.
+
+    METHODS get_ddic_domain
+      RETURNING
+        VALUE(value) TYPE char30.
+
+    METHODS set_edit_mask
+      IMPORTING
+        value TYPE any.
+ENDCLASS.
+
+CLASS cl_salv_column IMPLEMENTATION.
+  METHOD set_edit_mask.
+    RETURN. " todo, implement method
+  ENDMETHOD.
+
+  METHOD get_ddic_domain.
+    RETURN. " todo, implement method
+  ENDMETHOD.
+
+  METHOD get_ddic_inttype.
+    RETURN. " todo, implement method
+  ENDMETHOD.
+
+  METHOD get_ddic_datatype.
+    RETURN. " todo, implement method
+  ENDMETHOD.
+
+  METHOD get_columnname.
+    RETURN. " todo, implement method
+  ENDMETHOD.
+
+  METHOD set_currency.
+    RETURN. " todo, implement method
+  ENDMETHOD.
+
+  METHOD set_quantity_column.
+    RETURN. " todo, implement method
+  ENDMETHOD.
+
+  METHOD set_quantity.
+    RETURN. " todo, implement method
+  ENDMETHOD.
+
+  METHOD set_tooltip.
+    RETURN. " todo, implement method
+  ENDMETHOD.
+
+  METHOD set_currency_column.
+    ASSERT 1 = 'todo'.
+  ENDMETHOD.
+
+  METHOD set_zero.
+    ASSERT 1 = 'todo'.
+  ENDMETHOD.
+
+  METHOD set_visible.
+    ASSERT 1 = 'todo'.
+  ENDMETHOD.
+
+  METHOD set_alignment.
+    ASSERT 1 = 'todo'.
+  ENDMETHOD.
+
+  METHOD set_optimized.
+    ASSERT 1 = 'todo'.
+  ENDMETHOD.
+
+  METHOD set_technical.
+    ASSERT 1 = 'todo'.
+  ENDMETHOD.
+
+  METHOD set_short_text.
+    ASSERT 1 = 'todo'.
+  ENDMETHOD.
+
+  METHOD set_medium_text.
+    ASSERT 1 = 'todo'.
+  ENDMETHOD.
+
+  METHOD set_long_text.
+    ASSERT 1 = 'todo'.
+  ENDMETHOD.
+
+  METHOD set_output_length.
+    ASSERT 1 = 'todo'.
+  ENDMETHOD.
+
+  METHOD set_sign.
+    ASSERT 1 = 'todo'.
+  ENDMETHOD.
+ENDCLASS.

@@ -1,0 +1,7 @@
+CLASS cl_salv_functions DEFINITION PUBLIC.
+  PUBLIC SECTION.
+ENDCLASS.
+
+
+CLASS cl_salv_functions IMPLEMENTATION.
+ENDCLASS.

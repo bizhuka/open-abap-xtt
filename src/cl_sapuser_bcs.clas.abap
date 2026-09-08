@@ -1,0 +1,9 @@
+CLASS cl_sapuser_bcs DEFINITION PUBLIC.
+  PUBLIC SECTION.
+    INTERFACES if_recipient_bcs.
+    CLASS-METHODS create IMPORTING user TYPE any OPTIONAL RETURNING VALUE(result) TYPE REF TO cl_sapuser_bcs.
+ENDCLASS.
+CLASS cl_sapuser_bcs IMPLEMENTATION.
+  METHOD create.
+  ENDMETHOD.
+ENDCLASS.

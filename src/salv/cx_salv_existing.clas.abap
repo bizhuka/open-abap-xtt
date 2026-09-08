@@ -1,0 +1,8 @@
+CLASS cx_salv_existing DEFINITION PUBLIC INHERITING FROM cx_root.
+  PUBLIC SECTION.
+    METHODS constructor.
+ENDCLASS.
+CLASS cx_salv_existing IMPLEMENTATION.
+  METHOD constructor.
+  ENDMETHOD.
+ENDCLASS.

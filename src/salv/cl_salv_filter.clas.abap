@@ -1,0 +1,8 @@
+CLASS cl_salv_filter DEFINITION PUBLIC.
+  PUBLIC SECTION.
+    METHODS constructor.
+ENDCLASS.
+CLASS cl_salv_filter IMPLEMENTATION.
+  METHOD constructor.
+  ENDMETHOD.
+ENDCLASS.

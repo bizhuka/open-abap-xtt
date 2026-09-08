@@ -1,0 +1,7 @@
+CLASS cl_salv_columns_list DEFINITION PUBLIC.
+  PUBLIC SECTION.
+ENDCLASS.
+
+
+CLASS cl_salv_columns_list IMPLEMENTATION.
+ENDCLASS.

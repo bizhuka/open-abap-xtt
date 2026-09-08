@@ -1,0 +1,23 @@
+{
+  "input_folder": ["src", "test"],
+  "output_folder": "output",
+  "exclude": [],
+  "libs": [
+    {
+      "folder": "/node_modules/open-abap-core",
+      "files": "/src/**/*.*"
+    }
+  ],
+  "write_unit_tests": false,
+  "write_source_map": false,
+  "options": {
+    "ignoreSyntaxCheck": false,
+    "addFilenames": false,
+    "addCommonJS": true,
+    "unknownTypes": "compileError",
+    "setup": {
+      "filename": "../runtime/local-setup.mjs",
+      "preFunction": "initializeLocalRuntime"
+    }
+  }
+}

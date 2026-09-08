@@ -1,0 +1,8 @@
+CLASS cx_fp_exception DEFINITION PUBLIC INHERITING FROM cx_root.
+  PUBLIC SECTION.
+    METHODS constructor.
+ENDCLASS.
+CLASS cx_fp_exception IMPLEMENTATION.
+  METHOD constructor.
+  ENDMETHOD.
+ENDCLASS.

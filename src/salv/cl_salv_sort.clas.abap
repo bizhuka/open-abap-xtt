@@ -1,0 +1,8 @@
+CLASS cl_salv_sort DEFINITION PUBLIC.
+  PUBLIC SECTION.
+    METHODS constructor.
+ENDCLASS.
+CLASS cl_salv_sort IMPLEMENTATION.
+  METHOD constructor.
+  ENDMETHOD.
+ENDCLASS.
