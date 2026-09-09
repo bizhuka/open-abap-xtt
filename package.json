@@ -8,10 +8,7 @@
   "scripts": {
     "start": "node web/start.mjs",
     "verify": "node scripts/copy_repos.cjs && abaplint && node scripts/build.mjs && node scripts/run-tests.mjs",
-    "make_all": "node scripts/make_all.js",
-    "fly": "flyctl deploy",
-    "fly:open": "flyctl open",
-    "fly:logs": "flyctl logs"
+    "make_all": "node scripts/make_all.js"
   },
   "devDependencies": {
     "@abaplint/cli": "latest",

@@ -20,7 +20,7 @@ RUN npm ci --include=dev
 
 COPY abaplint.json abap_transpile.json ./
 COPY src ./src
-COPY test ./test
+# COPY test ./test
 COPY runtime ./runtime
 COPY scripts ./scripts
 COPY web ./web

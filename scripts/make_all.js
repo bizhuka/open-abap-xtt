@@ -17,27 +17,33 @@ async function run() {
         };
         const flush = () => { if (buf) red(buf); buf = ""; };
 
-        const out = new globalThis.abap.types.ABAPObject({ qualifiedName: "IF_OO_ADT_CLASSRUN_OUT" });
-        out.set({
-            if_oo_adt_classrun_out$write: async ({ data }) => { red(data.get()); return out; }
-        });
+        // const out = new globalThis.abap.types.ABAPObject({ qualifiedName: "IF_OO_ADT_CLASSRUN_OUT" });
+        // out.set({
+        //     if_oo_adt_classrun_out$write: async ({ data }) => { red(data.get()); return out; }
+        // });
 
-        const outDir = new URL("../output/", import.meta.url);
-        const files = await readdir(outDir);
-        for (const file of files.filter(f => /^ztest_.*\.prog\.mjs$/i.test(f)).sort()) {
-            const name = file.replace(/\.prog\.mjs$/i, "").toUpperCase();
-            console.log(`\n=== Running ${name} ===`);
-            await import(`../output/${file}`);
-            flush();
-        }
+        // const outDir = new URL("../output/", import.meta.url);
+        // const files = await readdir(outDir);
+        // for (const file of files.filter(f => /^ztest_.*\.prog\.mjs$/i.test(f)).sort()) {
+        //     const name = file.replace(/\.prog\.mjs$/i, "").toUpperCase();
+        //     console.warn(`\n=== Running ${name} ===`);
+        //     await import(`../output/${file}`);
+        //     flush();
+        // }
 
-        for (const name of Object.keys(globalThis.abap.Classes)) {
-            if (!name.startsWith("ZCL_TEST_")) continue;
-            console.log(`\n=== Running ${name} ===`);
-            const instance = await new globalThis.abap.Classes[name]().constructor_();
-            await instance.if_oo_adt_classrun$main?.({ out });
-            flush();
-        }
+        // for (const name of Object.keys(globalThis.abap.Classes)) {
+        //     if (!name.startsWith("ZCL_TEST_")) continue;
+        //     console.warn(`\n=== Running ${name} ===`);
+        //     const instance = await new globalThis.abap.Classes[name]().constructor_();
+        //     await instance.if_oo_adt_classrun$main?.({ out });
+        //     flush();
+        // }
+
+        const CL_OPEN_REPORT = globalThis.abap.Classes.ZCL_XTT_OPEN_REPORT;
+        console.warn(`\n=== Running ZCL_XTT_OPEN_REPORT ===`);
+        const instance = await new CL_OPEN_REPORT().constructor_();
+        await instance.make_all();
+        flush();
     } catch (error) {
         console.error("ABAP Runtime Error:", error);
         process.exitCode = 1;

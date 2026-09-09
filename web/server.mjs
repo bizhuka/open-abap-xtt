@@ -7,30 +7,6 @@ const rootDir = dirname(fileURLToPath(new URL(".", import.meta.url)));
 const initPath = join(rootDir, "output", "_init.mjs");
 const publicDir = join(rootDir, "web", "public");
 
-const EXAMPLES = [
-    { id: "Z_XTT_DEMO_N010", description: "Simple structure" },
-    { id: "Z_XTT_DEMO_N020", description: "Basic table example" },
-    { id: "Z_XTT_DEMO_N021", description: "Different formulas" },
-    { id: "Z_XTT_DEMO_N022", description: "Merging cells (Flight Model)" },
-    { id: "Z_XTT_DEMO_N030", description: "Nested blocks" },
-    { id: "Z_XTT_DEMO_N040", description: "Data types" },
-    { id: "Z_XTT_DEMO_N050", description: "Tree group by fields" },
-    { id: "Z_XTT_DEMO_N051", description: "Output level by condition" },
-    { id: "Z_XTT_DEMO_N052", description: "Aggregation functions" },
-    { id: "Z_XTT_DEMO_N060", description: "Tree (group by field relations)" },
-    { id: "Z_XTT_DEMO_N070", description: "Macro call & on_prepare_raw" },
-    { id: "Z_XTT_DEMO_N080", description: "direction=column" },
-    { id: "Z_XTT_DEMO_N090", description: "Dynamic table (tree)" },
-    { id: "Z_XTT_DEMO_N091", description: "Many sheets and columns" },
-    { id: "Z_XTT_DEMO_N092", description: "Dynamic table (new syntax)" },
-    { id: "Z_XTT_DEMO_N100", description: "Images" },
-    { id: "Z_XTT_DEMO_N110", description: "Image template declaration" },
-    { id: "Z_XTT_DEMO_N120", description: "Class attributes" },
-    { id: "Z_XTT_DEMO_N130", description: "COND #( ) operator" },
-    { id: "Z_XTT_DEMO_N140", description: ";type=block" },
-    { id: "Z_XTT_DEMO_N160", description: ";call=" },
-];
-
 if (!existsSync(initPath)) {
     console.error("Missing output/_init.mjs. Run npm run verify first (or set VERIFY_ON_START=1 on the server).");
     process.exit(1);
@@ -48,151 +24,110 @@ function patchDefaultDateTimeFormat() {
     globalThis.Intl.DateTimeFormat.prototype = OriginalDateTimeFormat.prototype;
 }
 
-function textOf(value) {
-    if (value == null) {
-        return "";
-    }
-    if (typeof value === "string" || typeof value === "number") {
-        return String(value).trim();
-    }
-    if (typeof value.get === "function") {
-        return textOf(value.get());
-    }
-    return String(value).trim();
-}
-
-function isAbapTrue(value) {
-    const text = textOf(value);
-    return text === "X" || text === "true" || text === "1";
-}
-
-function createTyped(factory, fallback) {
-    try {
-        if (typeof factory === "function") {
-            return factory();
-        }
-    } catch {
-        // use fallback
-    }
-    return fallback();
-}
-
-function abapString(value = "") {
-    const result = new globalThis.abap.types.String({ qualifiedName: "STRING" });
-    result.set(value ?? "");
-    return result;
-}
-
-function abapInteger(value) {
-    const result = new globalThis.abap.types.Integer({ qualifiedName: "INT4" });
-    result.set(Number(value) || 0);
-    return result;
-}
-
-function abapNumc2(value) {
-    const Numc = globalThis.abap.types.Numc;
-    const result = Numc
-        ? new Numc({ length: 2, qualifiedName: "NUMC2" })
-        : new globalThis.abap.types.Character({ length: 2, qualifiedName: "NUMC2" });
-    result.set(String(value ?? "0").padStart(2, "0"));
-    return result;
-}
-
-function abapXString() {
-    return new globalThis.abap.types.XString({ qualifiedName: "XSTRING" });
-}
-
-function xstringToBuffer(value) {
-    const hex = textOf(value).replace(/\s+/g, "");
-    if (!hex) {
-        return Buffer.alloc(0);
-    }
-    return Buffer.from(hex, "hex");
-}
-
-function parseCount(value, fallback) {
-    const number = Number.parseInt(String(value ?? ""), 10);
-    return Number.isFinite(number) ? number : fallback;
-}
+const textOf = (v) => (v == null ? "" : String(typeof v.get === "function" ? v.get() : v).trim());
+const isAbapTrue = (v) => ["X", "true", "1"].includes(textOf(v));
+const parseCount = (v, fallback) => {
+    const n = Number.parseInt(String(v ?? ""), 10);
+    return Number.isFinite(n) ? n : fallback;
+};
+const xstringToBuffer = (v) => {
+    const hex = textOf(v).replace(/\s+/g, "");
+    return hex ? Buffer.from(hex, "hex") : Buffer.alloc(0);
+};
 
 let abapQueue = Promise.resolve();
-function withAbap(work) {
+const withAbap = (work) => {
     const run = abapQueue.then(work, work);
     abapQueue = run.catch(() => undefined);
     return run;
-}
+};
 
 patchDefaultDateTimeFormat();
 const init = await import("../output/_init.mjs");
 await init.initializeABAP();
 
-const TestClass = globalThis.abap.Classes.ZCL_TEST_XTT_01;
-if (!TestClass) {
-    console.error("ZCL_TEST_XTT_01 is not loaded. Run npm run verify.");
+const { Structure, TableFactory, Character, String: ABAPString, XString, Integer, Numc } = globalThis.abap.types;
+const CL_OPEN_REPORT = globalThis.abap.Classes.ZCL_XTT_OPEN_REPORT;
+const CL_DEMO = globalThis.abap.Classes.ZCL_XTT_DEMO;
+
+if (!CL_OPEN_REPORT) {
+    console.error("ZCL_XTT_OPEN_REPORT is not loaded. Run npm run verify.");
     process.exit(1);
 }
 
-async function callMeta(exampleId) {
-    const instance = await new TestClass().constructor_();
-    const params = TestClass.METHODS?.GET_EXAMPLE_META?.parameters ?? {};
-    const esOpt = createTyped(params.ES_OPT?.type, () => new globalThis.abap.types.Structure({
-        row_count: new globalThis.abap.types.Character(1, { qualifiedName: "ABAP_BOOL" }),
-        colum_count: new globalThis.abap.types.Character(1, { qualifiedName: "ABAP_BOOL" }),
-        block_count: new globalThis.abap.types.Character(1, { qualifiedName: "ABAP_BOOL" }),
-        zip: new globalThis.abap.types.Character(1, { qualifiedName: "ABAP_BOOL" }),
-        img_size: new globalThis.abap.types.Character(1, { qualifiedName: "ABAP_BOOL" }),
-    }, "zcl_xtt_demo=>ts_screen_opt"));
-    const etTemplates = createTyped(params.ET_TEMPLATES?.type, () => globalThis.abap.types.TableFactory.construct(
-        new globalThis.abap.types.Structure({
-            objid: new globalThis.abap.types.Character(40, {}),
-        }, "zcl_xtt_demo=>ts_template"),
-        { withHeader: false, keyType: "DEFAULT" },
-        "zcl_xtt_demo=>tt_template",
-    ));
-    const evError = abapString();
+// Instantiate direct type if available on ZCL_XTT_DEMO, else create minimal structure
+const newType = (fn, fallback) => {
+    try {
+        return typeof fn === "function" ? (fn.prototype ? new fn() : fn()) : fallback();
+    } catch {
+        return fallback();
+    }
+};
 
-    await instance.get_example_meta({
-        iv_example: abapString(exampleId),
+const makeScreenOpt = () => newType(CL_DEMO?.ts_screen_opt, () => new Structure({
+    row_count:   new Character(1),
+    colum_count: new Character(1),
+    block_count: new Character(1),
+    zip:         new Character(1),
+    img_size:    new Character(1),
+}));
+
+const makeTemplates = () => newType(CL_DEMO?.tt_template, () => TableFactory.construct(
+    new Structure({ objid: new Character(40) })
+));
+
+async function callGetAllExamples() {
+    const instance = await new CL_OPEN_REPORT().constructor_();
+    const rtExamples = await instance.get_all_examples();
+    return rtExamples.array().map((row) => {
+        const val = row.get();
+        return {
+            ind: textOf(val.ind),
+            desc: textOf(val.desc)
+        };
+    });
+}
+
+async function callMeta(exampleId) {
+    const instance = await new CL_OPEN_REPORT().constructor_();
+    const esOpt = makeScreenOpt();
+    const etTemplates = makeTemplates();
+    const evError = new ABAPString();
+
+    await instance.web_get_example_meta({
+        iv_ind: new Character(3).set(exampleId),
         es_opt: esOpt,
         et_templates: etTemplates,
         ev_error: evError,
     });
 
     const error = textOf(evError);
-    if (error) {
-        return { error };
-    }
+    if (error) return { error };
 
-    const templates = [];
-    for (const row of etTemplates.array()) {
-        const objid = textOf(row.get ? row.get().objid : row.objid);
-        if (objid) {
-            templates.push({ objid });
-        }
-    }
-
-    const opt = esOpt.get ? esOpt.get() : esOpt;
+    const opt = esOpt.get();
     return {
         row_count: isAbapTrue(opt.row_count),
         colum_count: isAbapTrue(opt.colum_count),
         block_count: isAbapTrue(opt.block_count),
-        templates,
+        templates: etTemplates.array()
+            .map((row) => ({ objid: textOf(row.get().objid) }))
+            .filter((t) => t.objid),
     };
 }
 
 async function callGenerate({ example, template, rCnt, cCnt, bCnt }) {
-    const instance = await new TestClass().constructor_();
-    const evRaw = abapXString();
-    const evFilename = abapString();
-    const evMimetype = abapString();
-    const evError = abapString();
+    const instance = await new CL_OPEN_REPORT().constructor_();
+    const evRaw = new XString();
+    const evFilename = new ABAPString();
+    const evMimetype = new ABAPString();
+    const evError = new ABAPString();
 
-    await instance.generate({
-        iv_example: abapString(example),
-        iv_template: abapString(template),
-        iv_r_cnt: abapInteger(rCnt),
-        iv_c_cnt: abapNumc2(cCnt),
-        iv_b_cnt: abapInteger(bCnt),
+    await instance.web_generate({
+        iv_ind: new Character(3).set(example),
+        iv_template: new ABAPString().set(template),
+        iv_r_cnt: new Integer().set(rCnt),
+        iv_c_cnt: new Numc(2).set(cCnt),
+        iv_b_cnt: new Integer().set(bCnt),
         ev_raw: evRaw,
         ev_filename: evFilename,
         ev_mimetype: evMimetype,
@@ -200,13 +135,11 @@ async function callGenerate({ example, template, rCnt, cCnt, bCnt }) {
     });
 
     const error = textOf(evError);
-    if (error) {
-        return { error };
-    }
+    if (error) return { error };
 
     return {
         buffer: xstringToBuffer(evRaw),
-        filename: textOf(evFilename) || "report.bin",
+        filename: textOf(evFilename) || "no_file_name.bin",
         mimetype: textOf(evMimetype) || "application/octet-stream",
     };
 }
@@ -216,23 +149,22 @@ app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(publicDir));
 
-app.get("/api/examples", (_req, res) => {
-    res.json(EXAMPLES);
+app.get("/api/examples", async (_req, res) => {
+    try {
+        const list = await withAbap(() => callGetAllExamples());
+        res.json(list);
+    } catch (error) {
+        res.status(500).json({ error: error.message ?? String(error) });
+    }
 });
 
 app.get("/api/example", async (req, res) => {
-    const id = String(req.query.id ?? "").trim();
-    if (!id) {
-        res.status(400).json({ error: "example id is required" });
-        return;
-    }
+    const ind = String(req.query.ind ?? "").trim();
+    if (!ind) return res.status(400).json({ error: "example ind is required" });
 
     try {
-        const result = await withAbap(() => callMeta(id));
-        if (result.error) {
-            res.status(400).json({ error: result.error });
-            return;
-        }
+        const result = await withAbap(() => callMeta(ind));
+        if (result.error) return res.status(400).json({ error: result.error });
         res.json(result);
     } catch (error) {
         res.status(500).json({ error: error.message ?? String(error) });
@@ -247,20 +179,14 @@ app.post("/api/generate", async (req, res) => {
     const bCnt = parseCount(req.body?.mv_b_cnt, 3);
 
     if (!example || !template) {
-        res.status(400).json({ error: "example and template are required" });
-        return;
+        return res.status(400).json({ error: "example and template are required" });
     }
 
     try {
         const result = await withAbap(() => callGenerate({ example, template, rCnt, cCnt, bCnt }));
-        if (result.error) {
-            res.status(400).json({ error: result.error });
-            return;
-        }
-        if (!result.buffer.length) {
-            res.status(500).json({ error: "Generated file is empty" });
-            return;
-        }
+        if (result.error) return res.status(400).json({ error: result.error });
+        if (!result.buffer.length) return res.status(500).json({ error: "Generated file is empty" });
+
         res.setHeader("Content-Type", result.mimetype);
         res.setHeader("Content-Disposition", `attachment; filename="${result.filename}"`);
         res.send(result.buffer);

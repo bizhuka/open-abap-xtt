@@ -93,7 +93,7 @@ async function run() {
 
         for (const [exportName, TestClass] of testClasses) {
             const methods = Object.keys(TestClass.METHODS)
-                .filter((method) => method.toUpperCase() !== "CONSTRUCTOR" && !method.startsWith("_"))
+                .filter((method) => !method.startsWith("_"))
                 .sort();
 
             for (const methodKey of methods) {                

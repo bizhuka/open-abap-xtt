@@ -439,14 +439,20 @@ CLASS cl_gui_frontend_services IMPLEMENTATION.
     " TODO: parameter DATA_TAB is never used or assigned (ABAP cleaner)
 
     DATA lv_error_code TYPE string.
+    DATA hex_content   TYPE xstring.
+    
     " WRITE '@KERNEL debugger;'.
+
     WRITE '@KERNEL try {'.
     WRITE '@KERNEL const fs = await import("node:fs");'.
     WRITE '@KERNEL const path = await import("node:path");'.
     WRITE '@KERNEL fs.mkdirSync(path.dirname(filename.get()), { recursive: true });'.
     WRITE '@KERNEL if (filetype.get().substring(0, 3) === "BIN") {'.
     " WRITE '@KERNEL   const hexContent = data_tab.array().map(l => l.get()).join("");'.
-    WRITE '@KERNEL   fs.writeFileSync(filename.get(), Buffer.from(data_tab.get(), "hex"));'.
+               hex_content = zcl_eui_conv=>BINARY_TO_XSTRING( IT_TABLE  = data_tab[]
+                                                             IV_LENGTH = bin_filesize ).
+
+    WRITE '@KERNEL   fs.writeFileSync(filename.get(), Buffer.from(hex_content.get(), "hex"));'.
     WRITE '@KERNEL } else {'.
     WRITE '@KERNEL   const content = data_tab.array().map((line) => line.get()).join(write_lf.get() === "X" ? String.fromCharCode(10) : "");'.
     WRITE '@KERNEL   fs.writeFileSync(filename.get(), content, { encoding: "utf8", flag: append.get() === "X" ? "a" : "w" });'.
