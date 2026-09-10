@@ -2,11 +2,18 @@
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
+# Deploy from the repo root (fly.cmd does this):
+#   fly\fly.cmd
+#
+# Docker build context is the repo root; this file only lives under fly/.
 
 app = 'open-abap-xtt'
 primary_region = 'iad'
 
 [build]
+  dockerfile = "fly/Dockerfile"
+  ignorefile = "fly/.dockerignore"
+
 [env]
   PORT = '3000'
   VERIFY_ON_START = '0'

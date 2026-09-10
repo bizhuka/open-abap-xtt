@@ -29,9 +29,7 @@ const REPOS = [
         marker: "zcl_xtt.clas.abap",
         exclude: [
             "**/package.devc.xml",
-            "demo/zxtt_break_point*",
-            "demo/z_xtt_demo_n060.prog.*",
-            "demo/z_xtt_demo_n100.prog.*"
+            "demo/zxtt_break_point*"
         ]
     }
 ];

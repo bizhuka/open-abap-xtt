@@ -7,6 +7,7 @@ import { scarr } from "./fixtures/scarr.mjs";
 import { t005t } from "./fixtures/t005t.mjs";
 import { t006a } from "./fixtures/t006a.mjs";
 import { icon } from "./fixtures/icon.mjs";
+import { pa0002 } from "./fixtures/pa0002.mjs";
 
 function escapeSqlText(value) {
     if (!value) return '';
@@ -38,6 +39,9 @@ export async function initializeLocalRuntime(abap, schemas) {
     }
     if (!sqlite.includes("CREATE TABLE 'wwwparams'")) {
         sqlite += "CREATE TABLE 'wwwparams' ('relid' NCHAR(2) COLLATE RTRIM, 'objid' NCHAR(40) COLLATE RTRIM, 'name' NCHAR(50) COLLATE RTRIM, 'value' NCHAR(250) COLLATE RTRIM); ";
+    }
+    if (!sqlite.includes("CREATE TABLE 'pa0002'")) {
+        sqlite += "CREATE TABLE 'pa0002' ('pernr' NCHAR(8) COLLATE RTRIM, 'nachn' NCHAR(40) COLLATE RTRIM, 'vorna' NCHAR(40) COLLATE RTRIM, 'midnm' NCHAR(40) COLLATE RTRIM, 'gesch' NCHAR(1) COLLATE RTRIM, 'gbdat' NCHAR(8) COLLATE RTRIM, 'perid' NCHAR(20) COLLATE RTRIM, 's_photo' NCHAR(255) COLLATE RTRIM, 'begda' NCHAR(8) COLLATE RTRIM, 'endda' NCHAR(8) COLLATE RTRIM, 'sprps' NCHAR(1) COLLATE RTRIM); ";
     }
 
     const database = new SQLiteDatabaseClient();
@@ -91,6 +95,23 @@ export async function initializeLocalRuntime(abap, schemas) {
     for (const row of icon) {
         await database.execute(
             "INSERT INTO icon (id, name, oleng, s_raw) VALUES ('" + escapeSqlText(row.id) + "', '" + escapeSqlText(row.name) + "', " + row.oleng + ", '" + escapeSqlText(row.s_raw) + "')"
+        );
+    }
+
+    for (const row of pa0002) {
+        await database.execute(
+            "INSERT INTO pa0002 (pernr, nachn, vorna, midnm, gesch, gbdat, perid, s_photo, begda, endda, sprps) VALUES ('" +
+            escapeSqlText(row.pernr) + "', '" +
+            escapeSqlText(row.nachn) + "', '" +
+            escapeSqlText(row.vorna) + "', '" +
+            escapeSqlText(row.midnm) + "', '" +
+            escapeSqlText(row.gesch) + "', '" +
+            escapeSqlText(row.gbdat) + "', '" +
+            escapeSqlText(row.perid) + "', '" +
+            escapeSqlText(row.s_photo) + "', '" +
+            escapeSqlText(row.begda) + "', '" +
+            escapeSqlText(row.endda) + "', '" +
+            escapeSqlText(row.sprps) + "')"
         );
     }
 }
