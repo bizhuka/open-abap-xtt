@@ -1,0 +1,10 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "npm run verify",
+  "functions": {
+    "server.mjs": {
+      "includeFiles": "{output/**,node_modules/sql.js/dist/sql-wasm.wasm}",
+      "maxDuration": 300
+    }
+  }
+}

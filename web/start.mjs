@@ -1,5 +1,4 @@
 import { existsSync, readFileSync } from "node:fs";
-import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 const envPath = fileURLToPath(new URL("../.env", import.meta.url));
@@ -27,15 +26,9 @@ if (existsSync(envPath)) {
     }
 }
 
-if (process.env.VERIFY_ON_START === "1") {
-    console.log("VERIFY_ON_START=1: running npm run verify");
-    const result = spawnSync("npm", ["run", "verify"], {
-        stdio: "inherit",
-        shell: true,
-    });
-    if (result.status !== 0) {
-        process.exit(result.status ?? 1);
-    }
-}
+const { default: app } = await import("../server.mjs");
+const port = Number.parseInt(process.env.PORT ?? "3000", 10) || 3000;
 
-await import("./server.mjs");
+app.listen(port, () => {
+    console.log(`XTT demo UI: http://localhost:${port}`);
+});

@@ -1,15 +1,14 @@
 import { existsSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import express from "express";
 
-const rootDir = dirname(fileURLToPath(new URL(".", import.meta.url)));
+const rootDir = fileURLToPath(new URL(".", import.meta.url));
 const initPath = join(rootDir, "output", "_init.mjs");
-const publicDir = join(rootDir, "web", "public");
+const publicDir = join(rootDir, "public");
 
 if (!existsSync(initPath)) {
-    console.error("Missing output/_init.mjs. Run npm run verify first (or set VERIFY_ON_START=1 on the server).");
-    process.exit(1);
+    throw new Error("Missing output/_init.mjs. Run npm run verify before starting the server.");
 }
 
 function patchDefaultDateTimeFormat() {
@@ -43,7 +42,7 @@ const withAbap = (work) => {
 };
 
 patchDefaultDateTimeFormat();
-const init = await import("../output/_init.mjs");
+const init = await import("./output/_init.mjs");
 await init.initializeABAP();
 
 const { Structure, TableFactory, Character, String: ABAPString, XString, Integer, Numc } = globalThis.abap.types;
@@ -51,8 +50,7 @@ const CL_OPEN_REPORT = globalThis.abap.Classes.ZCL_XTT_OPEN_REPORT;
 const CL_DEMO = globalThis.abap.Classes.ZCL_XTT_DEMO;
 
 if (!CL_OPEN_REPORT) {
-    console.error("ZCL_XTT_OPEN_REPORT is not loaded. Run npm run verify.");
-    process.exit(1);
+    throw new Error("ZCL_XTT_OPEN_REPORT is not loaded. Run npm run verify.");
 }
 
 // Instantiate direct type if available on ZCL_XTT_DEMO, else create minimal structure
@@ -195,7 +193,9 @@ app.post("/api/generate", async (req, res) => {
     }
 });
 
-const port = Number.parseInt(process.env.PORT ?? "3000", 10) || 3000;
-app.listen(port, () => {
-    console.log(`XTT demo UI: http://localhost:${port}`);
+app.use((error, _req, res, _next) => {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
 });
+
+export default app;

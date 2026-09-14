@@ -23,6 +23,8 @@ COPY src ./src
 # COPY test ./test
 COPY runtime ./runtime
 COPY scripts ./scripts
+COPY server.mjs ./
+COPY public ./public
 COPY web ./web
 
 RUN npm run verify

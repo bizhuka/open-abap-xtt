@@ -19,5 +19,8 @@
     "@abaplint/database-sqlite": "latest",
     "@abaplint/runtime": "latest",
     "express": "^4.22.2"
+  },
+  "overrides": {
+    "temporal-polyfill": "0.3.0"
   }
 }
