@@ -11,8 +11,8 @@ app = 'open-abap-xtt'
 primary_region = 'iad'
 
 [build]
-  dockerfile = "fly/Dockerfile"
-  ignorefile = "fly/.dockerignore"
+  dockerfile = "Dockerfile"
+  ignorefile = ".dockerignore"
 
 [env]
   PORT = '3000'

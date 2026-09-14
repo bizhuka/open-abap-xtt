@@ -17,6 +17,10 @@ for /f "delims=" %%I in ('where fly.exe 2^>nul') do (
   set "FLYCTL=%%I"
   goto :have
 )
+if exist "%USERPROFILE%\.fly\bin\flyctl.exe" (
+  set "FLYCTL=%USERPROFILE%\.fly\bin\flyctl.exe"
+  goto :have
+)
 
 echo flyctl is not on PATH.
 echo Install: https://fly.io/docs/flyctl/install/
@@ -47,7 +51,7 @@ call :run launch --copy-config --yes --no-deploy --config "%FLY_DIR%\fly.toml"
 exit /b %ERRORLEVEL%
 
 :deploy
-call :run deploy --config "%FLY_DIR%\fly.toml" --dockerfile "%FLY_DIR%\Dockerfile" --ignorefile "%FLY_DIR%\.dockerignore"
+call :run deploy "%ROOT%" --config "%FLY_DIR%\fly.toml"
 exit /b %ERRORLEVEL%
 
 :open
