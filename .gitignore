@@ -1,4 +1,6 @@
 node_modules/
+src/eui/
+src/xtt/
 output/
 *.log
 .env

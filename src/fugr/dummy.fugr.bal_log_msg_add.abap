@@ -23,4 +23,9 @@ FUNCTION bal_log_msg_add.
   ls_message-msg        = i_s_msg.
   APPEND ls_message TO gt_message.
 
+  e_s_msg_handle-log_handle = i_log_handle.
+  e_s_msg_handle-msgnumber = gv_msg_cnt.
+  e_msg_was_logged = abap_true.
+  e_msg_was_displayed = abap_false.
+
 ENDFUNCTION.

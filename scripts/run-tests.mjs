@@ -22,15 +22,32 @@ function flushOutput() {
     }
 }
 
-function formatError(error) {
-    const message = error?.msgv1;
-    if (message && typeof message.get === "function") {
-        const text = message.get().trim();
-        if (text.length > 0) {
-            return text;
-        }
+function errorFieldText(value) {
+    if (typeof value === "string") {
+        return value.trim();
     }
-    return error?.msg?.value ?? error?.message;
+    if (value && typeof value.get === "function") {
+        return textOf(value).trim();
+    }
+    if (typeof value?.value === "string") {
+        return value.value.trim();
+    }
+    return "";
+}
+
+function formatError(error) {
+    const message = errorFieldText(error?.msgv1) || errorFieldText(error?.msg);
+    if (message.length > 0) {
+        return message;
+    }
+
+    const expected = errorFieldText(error?.expected);
+    const actual = errorFieldText(error?.actual);
+    if (expected.length > 0 || actual.length > 0) {
+        return `Expected '${expected}', got '${actual}'`;
+    }
+
+    return error?.message ?? String(error);
 }
 
 function patchDefaultDateTimeFormat() {
