@@ -4,6 +4,9 @@ The Vercel build runs `npm run verify`, which validates and transpiles the ABAP
 sources into `output/`. Verification is deliberately not repeated when a
 function instance starts.
 
+`vercel.json` stays in the repository root so both Git-triggered deployments
+and `vercel\deploy.cmd` use the same function packaging configuration.
+
 ## First deployment
 
 1. Install the CLI: `npm install --global vercel`

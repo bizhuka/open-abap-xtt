@@ -1,7 +1,7 @@
 @echo off
 setlocal EnableExtensions
 
-rem Run Vercel from the repository root while keeping its config in vercel\.
+rem Run Vercel from the repository root. Vercel also reads the root config for Git deployments.
 
 set "VERCEL_DIR=%~dp0"
 if "%VERCEL_DIR:~-1%"=="\" set "VERCEL_DIR=%VERCEL_DIR:~0,-1%"
@@ -69,7 +69,7 @@ exit /b %ERR%
 
 :run
 pushd "%ROOT%"
-call "%VERCEL_CLI%" %* --local-config "%VERCEL_DIR%\vercel.json"
+call "%VERCEL_CLI%" %* --local-config "%ROOT%\vercel.json"
 set "ERR=%ERRORLEVEL%"
 popd
 exit /b %ERR%
