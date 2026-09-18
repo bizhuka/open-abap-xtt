@@ -169,12 +169,14 @@ app.get("/api/example", async (req, res) => {
     }
 });
 
-app.post("/api/generate", async (req, res) => {
-    const example = String(req.body?.example ?? "").trim();
-    const template = String(req.body?.template ?? "").trim();
-    const rCnt = parseCount(req.body?.mv_r_cnt, 15);
-    const cCnt = parseCount(req.body?.mv_c_cnt, 3);
-    const bCnt = parseCount(req.body?.mv_b_cnt, 3);
+const generate = async (req, res) => {
+    const params = req.method === "GET" ? req.query : req.body;
+    
+    const example = String(params?.example ?? "").trim();
+    const template = String(params?.template ?? "").trim();
+    const rCnt = parseCount(params?.mv_r_cnt, 15);
+    const cCnt = parseCount(params?.mv_c_cnt, 3);
+    const bCnt = parseCount(params?.mv_b_cnt, 3);
 
     if (!example || !template) {
         return res.status(400).json({ error: "example and template are required" });
@@ -191,7 +193,10 @@ app.post("/api/generate", async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: error.message ?? String(error) });
     }
-});
+};
+
+app.get("/api/generate", generate);
+app.post("/api/generate", generate);
 
 app.use((error, _req, res, _next) => {
     console.error(error);
